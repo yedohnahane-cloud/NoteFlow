@@ -13,7 +13,45 @@ router.post("/register", async (req, res) => {
             message: "Tous les champs sont obligatoires"
         });
     }
+router.post("/login", async (req, res) => {
+    const { email, password } = req.body;
 
+    if (!email || !password) {
+        return res.status(400).json({
+            message: "Email et mot de passe obligatoires"
+        });
+    }
+
+    const user = db.prepare(
+        "SELECT * FROM users WHERE email = ?"
+    ).get(email);
+
+    if (!user) {
+        return res.status(401).json({
+            message: "Email ou mot de passe incorrect"
+        });
+    }
+
+    const passwordCorrect = await bcrypt.compare(
+        password,
+        user.password
+    );
+
+    if (!passwordCorrect) {
+        return res.status(401).json({
+            message: "Email ou mot de passe incorrect"
+        });
+    }
+
+    res.json({
+        message: "Connexion réussie",
+        user: {
+            id: user.id,
+            name: user.name,
+            email: user.email
+        }
+    });
+});
     const hashedPassword = await bcrypt.hash(password, 10);
 
     try {

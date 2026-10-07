@@ -1,9 +1,15 @@
 const express = require("express");
+const db = require("./database/database");
+const authRoutes = require("./routes/auth");
+const notesRoutes = require("./routes/notes");
 
 const app = express();
 
-const db = require("./database/database");
+app.use(express.json());
+
 app.use("/api/auth", authRoutes);
+app.use("/api/notes", notesRoutes);
+
 app.get("/", (req, res) => {
     res.send("Bienvenue sur NoteFlow !");
 });
@@ -11,4 +17,3 @@ app.get("/", (req, res) => {
 app.listen(3000, () => {
     console.log("NoteFlow est lancé sur le port 3000");
 });
-app.use(express.json());
